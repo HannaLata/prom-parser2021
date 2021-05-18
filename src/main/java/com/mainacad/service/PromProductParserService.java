@@ -4,7 +4,6 @@ import com.mainacad.model.Item;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -53,7 +52,9 @@ public class PromProductParserService extends Thread {
                     getElementsByAttributeValue("data-qaid", "price_without_discount").first().attr("data-qaprice");
            out = new BigDecimal(outAsText).setScale(2, RoundingMode.HALF_UP);
         } catch (Exception e) {
-            LOG.severe(String.format("Item initial price by URL %s was not extracted!", url));
+            if(price == null) {
+                LOG.severe(String.format("Item initial price by URL %s was not extracted!", url));
+            }
         }
         return out;
     }

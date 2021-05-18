@@ -1,7 +1,6 @@
 package com.mainacad.util;
 
 import com.mainacad.model.Item;
-
 import java.util.List;
 
 public class ItemMapper {
