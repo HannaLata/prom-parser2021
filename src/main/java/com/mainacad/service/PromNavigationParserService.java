@@ -39,11 +39,11 @@ public class PromNavigationParserService extends Thread {
             productElements.forEach(it -> itemLinks.add(it.attr("href")));
 
             int counter = 0;
-            for (String link: itemLinks) {
-                if(counter>3) {
+            for (String link : itemLinks) {
+                if (counter > 1) {
                     break;
                 }
-                if(link != null) {
+                if (link != null) {
                     PromProductParserService promProductParserService = new PromProductParserService(items, url);
                     threads.add(promProductParserService);
                     promProductParserService.start();
@@ -57,19 +57,19 @@ public class PromNavigationParserService extends Thread {
 
         //pagination
         try {
-            if(!url.contains("pages=")) {
-                Element lastPageElement = document.getElementsByAttributeValue("data-qaid", "pages").last();
-                if(lastPageElement != null) {
-                    Integer lastPage = Integer.valueOf(lastPageElement.text());
-                    for (int i = 2; i <= lastPage ; i++) {
-                        String nextPageUrl = url + "&page=" + i;
-                        PromNavigationParserService promNavigationParserService =
-                                new PromNavigationParserService(items, nextPageUrl,threads);
-                        threads.add(promNavigationParserService);
-                        promNavigationParserService.start();
-                    }
-                }
+            if(items.size() > 10) {
+                return;
             }
+            Elements lastPageElements = document.getElementsByAttributeValue("rel", "next");
+            if (!lastPageElements.isEmpty()) {
+                Element lastPageElement = lastPageElements.first();
+                String nextPageUrl = lastPageElement.absUrl("href");
+                PromNavigationParserService promNavigationParserService =
+                        new PromNavigationParserService(items, nextPageUrl, threads);
+                threads.add(promNavigationParserService);
+                promNavigationParserService.start();
+            }
+
         } catch (Exception e) {
             LOG.severe(String.format("Pages by URL %s were not extracted!", url));
         }
